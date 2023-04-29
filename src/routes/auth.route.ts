@@ -24,7 +24,7 @@ authRouter.post("/:provider", async (req: Request, res: Response) => {
       );
 
       profile = {
-        id: data.sub,
+        id: data.sub.toString(),
         email: data.email,
         name: data.name,
       };
@@ -36,10 +36,13 @@ authRouter.post("/:provider", async (req: Request, res: Response) => {
       });
 
       profile = {
-        id: data.id,
-        email: data.kakao_account.email,
+        id: data.id.toString(),
         name: data.kakao_account.profile.nickname,
       };
+
+      if (data.kakao_account.email) {
+        profile = { ...profile, email: data.kakao_account.email };
+      }
     } else {
       res.status(400).json({ error: "Invalid provider" });
       return;
