@@ -8,18 +8,20 @@ datasource db {
 }
 
 model User {
-  id          Int       @id @default(autoincrement())
-  uuid        String    @unique
-  kakaoId     String?   @unique
-  iosToken    String?
-  createdAt   DateTime  @default(now())
-  fcmToken    String?   @unique
-  appleId     String?   @unique
-  Profile     Profile?
-  posts       Post[]
-  comments    Comment[]
-  chatRooms   ChatRoomUser[]
-  messages    Message[]
+  id            Int       @id @default(autoincrement())
+  email         String?    @unique
+  name          String
+  kakaoId       String?   @unique
+  appleId       String?   @unique
+  googleId      String?   @unique
+  iosToken      String?
+  fcmToken      String?   @unique
+  createdAt     DateTime  @default(now())
+  profile       Profile?
+  posts         Post[]
+  comments      Comment[]
+  chatRooms     ChatRoomUser[]
+  messages      Message[]
 }
 
 model Profile {
@@ -85,7 +87,6 @@ model Message {
   senderId    Int
   chatRoomId  Int
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
   sender      User     @relation(fields: [senderId], references: [id])
   chatRoom    ChatRoom @relation(fields: [chatRoomId], references: [id])
 }
