@@ -11,6 +11,7 @@ authRouter.post("/:provider", async (req: Request, res: Response) => {
   const { accessToken } = req.body;
 
   try {
+    console.log("hello");
     let profile;
 
     if (provider === "google") {
