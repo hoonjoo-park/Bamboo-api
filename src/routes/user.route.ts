@@ -54,7 +54,7 @@ userRouter.put(
           .createWriteStream()
           .end(file.buffer);
 
-        imageUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/profileImages%2F${imageName}`;
+        imageUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/profileImages%2F${imageName}?alt=media`;
       }
 
       const updatedUser = await prisma.user.update({
