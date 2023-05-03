@@ -6,13 +6,14 @@
     "noImplicitAny": true,
     "moduleResolution": "node",
     "sourceMap": true,
-    "baseUrl": ".",
+    "baseUrl": "./",
     "rootDir": ".",
     "outDir": "./dist",
     "paths": {
       "*": ["node_modules/*"]
     },
-    "lib": ["es2015"]
+    "lib": ["es2015"],
+    "typeRoots": ["./src/types", "./node_modules/@types"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"]
