@@ -55,6 +55,11 @@ authRouter.post("/:provider", async (req: Request, res: Response) => {
         [`${provider}Id`]: profile.id,
         email: profile.email,
         name: profile.name,
+        profile: {
+          create: {
+            username: `${profile.name}${Math.floor(Math.random() * 1000)}`,
+          },
+        },
       },
     });
 
