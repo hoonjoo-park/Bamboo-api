@@ -80,3 +80,25 @@ userRouter.put(
     }
   }
 );
+
+userRouter.delete("/me", authUser, async (req: Request, res: Response) => {
+  const userId = req.userId;
+
+  try {
+    await Promise.all([
+      prisma.user.delete({ where: { id: userId } }),
+      prisma.profile.delete({ where: { userId } }),
+      prisma.post.deleteMany({ where: { authorId: userId } }),
+      prisma.postLike.deleteMany({ where: { userId } }),
+      prisma.comment.deleteMany({ where: { authorId: userId } }),
+      prisma.chatRoomUser.deleteMany({ where: { userId: userId } }),
+      prisma.message.deleteMany({ where: { senderId: userId } }),
+      prisma.unregisterLog.create({ data: { userId } }),
+    ]);
+
+    res.status(204).send();
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "회원탈퇴 처리 중, 오류가 발생했습니다." });
+  }
+});

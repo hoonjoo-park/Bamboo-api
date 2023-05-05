@@ -103,3 +103,9 @@ model District {
   city        City @relation(fields: [cityId], references: [id])
   name        String
 }
+
+model UnregisterLog {
+  id        Int @id @default(autoincrement())
+  userId    Int
+  createdAt DateTime  @default(now())
+}
