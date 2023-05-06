@@ -88,8 +88,8 @@ userRouter.delete("/me", authUser, async (req: Request, res: Response) => {
     await Promise.all([
       prisma.user.delete({ where: { id: userId } }),
       prisma.profile.delete({ where: { userId } }),
-      prisma.post.deleteMany({ where: { authorId: userId } }),
-      prisma.postLike.deleteMany({ where: { userId } }),
+      prisma.article.deleteMany({ where: { authorId: userId } }),
+      prisma.articleLike.deleteMany({ where: { userId } }),
       prisma.comment.deleteMany({ where: { authorId: userId } }),
       prisma.chatRoomUser.deleteMany({ where: { userId: userId } }),
       prisma.message.deleteMany({ where: { senderId: userId } }),
