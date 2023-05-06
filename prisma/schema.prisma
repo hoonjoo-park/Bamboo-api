@@ -18,7 +18,7 @@ model User {
   fcmToken      String?     @unique
   createdAt     DateTime    @default(now())
   profile       Profile?
-  posts         Post[]
+  articles      Article[]
   comments      Comment[]
   chatRooms     ChatRoomUser[]
   messages      Message[]
@@ -32,25 +32,25 @@ model Profile {
   user         User   @relation(fields: [userId], references: [id])
 }
 
-model Post {
+model Article {
   id          Int         @id @default(autoincrement())
   title       String
   content     String
   authorId    Int
   author      User        @relation(fields: [authorId], references: [id])
   comments    Comment[]
-  likes       PostLike[]
+  likes       ArticleLike[]
   cityId      Int
   districtId  Int?
   createdAt   DateTime    @default(now())
 }
 
-model PostLike {
-  userId    Int
-  postId    Int
-  post      Post    @relation(fields: [postId], references: [id])
+model ArticleLike {
+  userId        Int
+  articleId     Int
+  article       Article    @relation(fields: [articleId], references: [id])
 
-  @@id([userId, postId])
+  @@id([userId, articleId])
 }
 
 model Comment {
@@ -58,8 +58,8 @@ model Comment {
   content           String
   authorId          Int
   author            User        @relation(fields: [authorId], references: [id])
-  postId            Int
-  post              Post        @relation(fields: [postId], references: [id])
+  articleId         Int
+  article           Article        @relation(fields: [articleId], references: [id])
   parentCommentId   Int?
   createdAt         DateTime    @default(now())
 }
