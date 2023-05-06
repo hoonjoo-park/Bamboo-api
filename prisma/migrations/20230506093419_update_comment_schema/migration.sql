@@ -1,0 +1,8 @@
+-- DropForeignKey
+ALTER TABLE `Comment` DROP FOREIGN KEY `Comment_parentCommentId_fkey`;
+
+-- AlterTable
+ALTER TABLE `Comment` ADD COLUMN `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);
+
+-- AlterTable
+ALTER TABLE `Post` ADD COLUMN `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);
