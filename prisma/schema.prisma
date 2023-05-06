@@ -8,15 +8,15 @@ datasource db {
 }
 
 model User {
-  id            Int       @id @default(autoincrement())
-  email         String?    @unique
+  id            Int         @id @default(autoincrement())
+  email         String?     @unique
   name          String
-  kakaoId       String?   @unique
-  appleId       String?   @unique
-  googleId      String?   @unique
+  kakaoId       String?     @unique
+  appleId       String?     @unique
+  googleId      String?     @unique
   iosToken      String?
-  fcmToken      String?   @unique
-  createdAt     DateTime  @default(now())
+  fcmToken      String?     @unique
+  createdAt     DateTime    @default(now())
   profile       Profile?
   posts         Post[]
   comments      Comment[]
@@ -33,15 +33,16 @@ model Profile {
 }
 
 model Post {
-  id          Int      @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   title       String
   content     String
   authorId    Int
-  author      User     @relation(fields: [authorId], references: [id])
+  author      User        @relation(fields: [authorId], references: [id])
   comments    Comment[]
   likes       PostLike[]
   cityId      Int
   districtId  Int?
+  createdAt   DateTime    @default(now())
 }
 
 model PostLike {
@@ -53,21 +54,20 @@ model PostLike {
 }
 
 model Comment {
-  id                Int      @id @default(autoincrement())
+  id                Int         @id @default(autoincrement())
   content           String
   authorId          Int
-  author            User     @relation(fields: [authorId], references: [id])
+  author            User        @relation(fields: [authorId], references: [id])
   postId            Int
-  post              Post     @relation(fields: [postId], references: [id])
+  post              Post        @relation(fields: [postId], references: [id])
   parentCommentId   Int?
-  parentComment     Comment?    @relation("CommentToComment", fields: [parentCommentId], references: [id])
-  childComments     Comment[]   @relation("CommentToComment")
+  createdAt         DateTime    @default(now())
 }
 
 model ChatRoomUser {
-  user        User           @relation(fields: [userId], references: [id])
+  user        User        @relation(fields: [userId], references: [id])
   userId      Int
-  chatRoom    ChatRoom       @relation(fields: [chatRoomId], references: [id])
+  chatRoom    ChatRoom    @relation(fields: [chatRoomId], references: [id])
   chatRoomId  Int
 
   @@id([userId, chatRoomId])
@@ -82,30 +82,30 @@ model ChatRoom {
 }
 
 model Message {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   content     String
   senderId    Int
   chatRoomId  Int
-  createdAt   DateTime @default(now())
-  sender      User     @relation(fields: [senderId], references: [id])
-  chatRoom    ChatRoom @relation(fields: [chatRoomId], references: [id])
+  createdAt   DateTime  @default(now())
+  sender      User      @relation(fields: [senderId], references: [id])
+  chatRoom    ChatRoom  @relation(fields: [chatRoomId], references: [id])
 }
 
 model City {
-  id          Int @id @default(autoincrement())
+  id          Int   @id   @default(autoincrement())
   name        String
   districts   District[]
 }
 
 model District {
-  id          Int @id @default(autoincrement())
+  id          Int     @id   @default(autoincrement())
   cityId      Int
-  city        City @relation(fields: [cityId], references: [id])
+  city        City    @relation(fields: [cityId], references: [id])
   name        String
 }
 
 model UnregisterLog {
-  id        Int @id @default(autoincrement())
+  id        Int       @id   @default(autoincrement())
   userId    Int
   createdAt DateTime  @default(now())
 }
