@@ -6,6 +6,7 @@ import morgan from "morgan";
 import { userRouter, userUrl } from "./routes/user.route";
 import admin from "firebase-admin";
 import { articleRouter, articleUrl } from "./routes/article.route";
+import { locationRouter, locationUrl } from "./routes/location.route";
 
 const app = express();
 app.use(express.json());
@@ -30,6 +31,7 @@ if (process.env.NODE_ENV === "production") {
 app.use(authUrl, authRouter);
 app.use(userUrl, userRouter);
 app.use(articleUrl, articleRouter);
+app.use(locationUrl, locationRouter);
 
 const PORT = process.env.PORT || 3000;
 
