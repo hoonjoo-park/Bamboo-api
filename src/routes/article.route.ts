@@ -9,7 +9,18 @@ export const articleRouter = Router();
 articleRouter.get("/", async (req: Request, res: Response) => {
   const { cityId, districtID } = req.body;
 
-  // TODO: cityId를 기준으로 지역별 또는, 전체 게시글 반환하는 로직 구현 필요
+  const whereQuery = districtID === -1 ? { cityId } : { cityId, districtID };
+
+  try {
+    const posts = prisma.article.findMany({
+      where: whereQuery,
+    });
+
+    res.status(200).json(posts);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Fetch Posts Error" });
+  }
 });
 
 articleRouter.post("/", authUser, async (req: Request, res: Response) => {
