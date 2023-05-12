@@ -3,6 +3,7 @@ import prisma from "../../prisma/prisma";
 import multer from "multer";
 import { bucket } from "../app";
 import { authUser } from "../middlewares/auth-helper";
+import { UserSelect } from "../utils/constants";
 
 export const userUrl = "/user";
 export const userRouter = Router();
@@ -13,18 +14,7 @@ userRouter.get("/me", authUser, async (req: Request, res: Response) => {
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      createdAt: true,
-      profile: {
-        select: {
-          username: true,
-          profileImage: true,
-        },
-      },
-    },
+    select: UserSelect,
   });
 
   if (!user) {
