@@ -12,11 +12,40 @@ articleRouter.get("/", async (req: Request, res: Response) => {
   const whereQuery = districtID === -1 ? { cityId } : { cityId, districtID };
 
   try {
-    const posts = prisma.article.findMany({
+    const posts = await prisma.article.findMany({
       where: whereQuery,
+      include: {
+        author: {
+          select: UserSelect,
+        },
+      },
     });
 
-    res.status(200).json(posts);
+    const postList = await Promise.all(
+      posts.map(async (post) => {
+        const commentCount = await prisma.comment.count({
+          where: { articleId: post.id },
+        });
+
+        const likeCount = await prisma.articleLike.count({
+          where: { articleId: post.id },
+        });
+
+        return {
+          id: post.id,
+          title: post.title,
+          content: post.content,
+          author: post.author,
+          cityId: post.cityId,
+          districtId: post.districtId,
+          commentCount: commentCount,
+          likeCount: likeCount,
+          createdAt: post.createdAt,
+        };
+      })
+    );
+
+    res.status(200).json(postList);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Fetch Posts Error" });
