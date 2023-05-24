@@ -3,13 +3,27 @@ import { authUser } from "../middlewares/auth-helper";
 import prisma from "../../prisma/prisma";
 import { UserSelect } from "../utils/constants";
 
+interface WhereQueryType {
+  [key: string]: string;
+  cityId?: any;
+  districtId?: any;
+}
+
 export const articleUrl = "/article";
 export const articleRouter = Router();
 
 articleRouter.get("/", async (req: Request, res: Response) => {
-  const { cityId, districtID } = req.body;
+  const { cityId, districtId } = req.body;
 
-  const whereQuery = districtID === -1 ? { cityId } : { cityId, districtID };
+  let whereQuery: WhereQueryType = {};
+
+  if (cityId < 0) {
+    whereQuery = {};
+  } else if (districtId < 0) {
+    whereQuery.cityId = cityId;
+  } else {
+    whereQuery = { cityId, districtId };
+  }
 
   try {
     const posts = await prisma.article.findMany({
