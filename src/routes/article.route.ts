@@ -66,6 +66,42 @@ articleRouter.get("/", async (req: Request, res: Response) => {
   }
 });
 
+articleRouter.get("/:articleId", async (req: Request, res: Response) => {
+  const { articleId } = req.params;
+
+  try {
+    const article = await prisma.article.findUnique({
+      where: { id: Number(articleId) },
+      include: {
+        author: {
+          select: UserSelect,
+        },
+        comments: true,
+        likes: true,
+      },
+    });
+
+    const city = await prisma.city.findUnique({
+      where: { id: article.cityId },
+    });
+
+    let districtName = null;
+
+    if (article.districtId !== null) {
+      const district = await prisma.district.findUnique({
+        where: { id: article.districtId },
+      });
+
+      districtName = district.name;
+    }
+
+    res.status(201).json({ ...article, cityName: city.name, districtName });
+  } catch (error) {
+    console.error("Error while fetching article:", error);
+    res.status(500).json({ error: "Error while fetching article" });
+  }
+});
+
 articleRouter.post("/", authUser, async (req: Request, res: Response) => {
   const { cityId, districtId, title, content } = req.body;
   const userId = req.userId;
