@@ -76,7 +76,13 @@ articleRouter.get("/:articleId", async (req: Request, res: Response) => {
         author: {
           select: UserSelect,
         },
-        comments: true,
+        comments: {
+          include: {
+            author: {
+              select: UserSelect,
+            },
+          },
+        },
         likes: true,
       },
     });
