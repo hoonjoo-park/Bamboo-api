@@ -2,11 +2,16 @@ import { Request, Response, Router } from "express";
 import { authUser } from "../middlewares/auth-helper";
 import prisma from "../../prisma/prisma";
 import { UserSelect } from "../utils/constants";
+import { Comment } from "@prisma/client";
 
 interface WhereQueryType {
   [key: string]: string;
   cityId?: any;
   districtId?: any;
+}
+
+interface CommentWithNested extends Comment {
+  nestedComments?: Comment[];
 }
 
 export const articleUrl = "/article";
@@ -101,7 +106,27 @@ articleRouter.get("/:articleId", async (req: Request, res: Response) => {
       districtName = district.name;
     }
 
-    res.status(201).json({ ...article, cityName: city.name, districtName });
+    const commentsWithNested = article.comments
+      .map((comment: CommentWithNested) => {
+        if (comment.parentCommentId === null) {
+          comment.nestedComments = article.comments.filter(
+            (childComment) => childComment.parentCommentId === comment.id
+          );
+          return comment;
+        } else {
+          comment.nestedComments = [];
+        }
+      })
+      .filter((comment) => comment !== undefined);
+
+    console.log(commentsWithNested);
+
+    res.status(201).json({
+      ...article,
+      cityName: city.name,
+      districtName,
+      comments: commentsWithNested,
+    });
   } catch (error) {
     console.error("Error while fetching article:", error);
     res.status(500).json({ error: "Error while fetching article" });
