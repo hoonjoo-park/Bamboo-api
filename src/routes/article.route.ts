@@ -119,13 +119,12 @@ articleRouter.get("/:articleId", async (req: Request, res: Response) => {
       })
       .filter((comment) => comment !== undefined);
 
-    console.log(commentsWithNested);
-
     res.status(201).json({
       ...article,
       cityName: city.name,
       districtName,
       comments: commentsWithNested,
+      commentCount: article.comments.length,
     });
   } catch (error) {
     console.error("Error while fetching article:", error);
