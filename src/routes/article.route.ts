@@ -173,3 +173,46 @@ articleRouter.post("/", authUser, async (req: Request, res: Response) => {
     res.status(500).json({ error: "Error while creating article" });
   }
 });
+
+articleRouter.post(
+  "/like/:articleId",
+  authUser,
+  async (req: Request, res: Response) => {
+    const { articleId } = req.params;
+    const userId = req.userId;
+
+    try {
+      const existingLike = await prisma.articleLike.findUnique({
+        where: {
+          userId_articleId: {
+            userId,
+            articleId: Number(articleId),
+          },
+        },
+      });
+
+      if (existingLike) {
+        await prisma.articleLike.delete({
+          where: {
+            userId_articleId: {
+              userId,
+              articleId: Number(articleId),
+            },
+          },
+        });
+      } else {
+        await prisma.articleLike.create({
+          data: {
+            userId,
+            articleId: Number(articleId),
+          },
+        });
+      }
+
+      res.status(200).json({ message: "ok" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Post article like Error" });
+    }
+  }
+);
