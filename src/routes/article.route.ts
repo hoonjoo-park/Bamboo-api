@@ -182,7 +182,37 @@ articleRouter.post(
     const userId = req.userId;
 
     try {
-      const existingLike = await prisma.articleLike.findUnique({
+      await prisma.articleLike.upsert({
+        where: {
+          userId_articleId: {
+            userId,
+            articleId: Number(articleId),
+          },
+        },
+        update: {},
+        create: {
+          userId,
+          articleId: Number(articleId),
+        },
+      });
+
+      res.status(200).json({ message: "ok" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Post article like Error" });
+    }
+  }
+);
+
+articleRouter.delete(
+  "/like/:articleId",
+  authUser,
+  async (req: Request, res: Response) => {
+    const { articleId } = req.params;
+    const userId = req.userId;
+
+    try {
+      await prisma.articleLike.delete({
         where: {
           userId_articleId: {
             userId,
@@ -191,28 +221,10 @@ articleRouter.post(
         },
       });
 
-      if (existingLike) {
-        await prisma.articleLike.delete({
-          where: {
-            userId_articleId: {
-              userId,
-              articleId: Number(articleId),
-            },
-          },
-        });
-      } else {
-        await prisma.articleLike.create({
-          data: {
-            userId,
-            articleId: Number(articleId),
-          },
-        });
-      }
-
       res.status(200).json({ message: "ok" });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: "Post article like Error" });
+      res.status(500).json({ error: "Delete article like Error" });
     }
   }
 );
