@@ -42,3 +42,28 @@ commentRouter.post(
     }
   }
 );
+
+commentRouter.delete(
+  "/:commentId",
+  authUser,
+  async (req: Request, res: Response) => {
+    const { commentId } = req.params;
+    const userId = req.userId;
+
+    try {
+      const currentComment = await prisma.comment.findUnique({
+        where: { id: Number(commentId) },
+      });
+
+      if (currentComment.authorId !== userId) {
+        throw new Error("본인이 작성한 댓글만 삭제 가능합니다.");
+      }
+
+      await prisma.comment.delete({ where: { id: Number(commentId) } });
+
+      res.status(200).json({ message: "ok" });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+);
