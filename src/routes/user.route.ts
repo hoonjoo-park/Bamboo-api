@@ -36,8 +36,27 @@ userRouter.put(
 
       let imageUrl = null;
 
+      const user = await prisma.user.findUnique({
+        where: { id: req.userId },
+        include: { profile: true },
+      });
+
+      if (user && user.profile.profileImage) {
+        const profileImageUrl = user.profile.profileImage;
+        const matched = profileImageUrl.match(
+          /profileImages%2F(.*?)\?alt=media/
+        );
+        const imageName = matched ? matched[1] : null;
+
+        if (imageName) {
+          await bucket.file(`profileImages/${imageName}`).delete();
+        }
+      }
+
       if (file) {
-        const imageName = `${req.userId}-${file.originalname}`;
+        const imageName = `${req.userId}-${Math.round(Math.random() * 10000)}-${
+          file.originalname
+        }`;
 
         bucket
           .file(`profileImages/${imageName}`)
