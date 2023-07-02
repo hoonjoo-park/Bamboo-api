@@ -27,7 +27,7 @@ commentRouter.post(
     };
 
     if (parentCommentId !== undefined) {
-      query.parentCommentId = parentCommentId;
+      query.parentCommentId = Number(parentCommentId);
     }
 
     try {
