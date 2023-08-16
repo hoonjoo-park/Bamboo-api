@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
-import prisma from "../../prisma/prisma";
 import multer from "multer";
+import prisma from "../../prisma/prisma";
 import { bucket } from "../app";
 import { authUser } from "../middlewares/auth-helper";
 import { UserSelect } from "../utils/constants";

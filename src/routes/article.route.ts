@@ -1,8 +1,8 @@
-import { Request, Response, Router } from "express";
-import { authUser } from "../middlewares/auth-helper";
-import prisma from "../../prisma/prisma";
-import { UserSelect } from "../utils/constants";
 import { Comment } from "@prisma/client";
+import { Request, Response, Router } from "express";
+import prisma from "../../prisma/prisma";
+import { authUser } from "../middlewares/auth-helper";
+import { UserSelect } from "../utils/constants";
 
 interface WhereQueryType {
   [key: string]: string;

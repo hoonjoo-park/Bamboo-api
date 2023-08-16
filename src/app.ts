@@ -1,13 +1,13 @@
-import express from "express";
-import cors from "cors";
 import bodyParser from "body-parser";
-import { authRouter, authUrl } from "./routes/auth.route";
-import morgan from "morgan";
-import { userRouter, userUrl } from "./routes/user.route";
+import cors from "cors";
+import express from "express";
 import admin from "firebase-admin";
+import morgan from "morgan";
 import { articleRouter, articleUrl } from "./routes/article.route";
-import { locationRouter, locationUrl } from "./routes/location.route";
+import { authRouter, authUrl } from "./routes/auth.route";
 import { commentRouter, commentUrl } from "./routes/comment.route";
+import { locationRouter, locationUrl } from "./routes/location.route";
+import { userRouter, userUrl } from "./routes/user.route";
 
 const app = express();
 app.use(express.json());

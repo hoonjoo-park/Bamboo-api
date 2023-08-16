@@ -1,7 +1,7 @@
-import { Request, Response, Router } from "express";
 import axios from "axios";
-import prisma from "../../prisma/prisma";
+import { Request, Response, Router } from "express";
 import jwt from "jsonwebtoken";
+import prisma from "../../prisma/prisma";
 
 export const authUrl = "/auth";
 export const authRouter = Router();
