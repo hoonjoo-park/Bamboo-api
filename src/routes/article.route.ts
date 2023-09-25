@@ -5,9 +5,8 @@ import { authUser } from "../middlewares/auth-helper";
 import { UserSelect } from "../utils/constants";
 
 interface WhereQueryType {
-  [key: string]: string;
-  cityId?: any;
-  districtId?: any;
+  cityId?: number;
+  districtId?: number;
 }
 
 interface CommentWithNested extends Comment {
@@ -18,16 +17,16 @@ export const articleUrl = "/article";
 export const articleRouter = Router();
 
 articleRouter.get("/", async (req: Request, res: Response) => {
-  const { cityId, districtId } = req.body;
+  const { cityId, districtId } = req.query;
 
   let whereQuery: WhereQueryType = {};
 
-  if (cityId < 0) {
+  if (Number(cityId) < 0) {
     whereQuery = {};
-  } else if (districtId < 0) {
-    whereQuery.cityId = cityId;
+  } else if (Number(districtId) < 0) {
+    whereQuery.cityId = Number(cityId);
   } else {
-    whereQuery = { cityId, districtId };
+    whereQuery = { cityId: Number(cityId), districtId: Number(districtId) };
   }
 
   try {
