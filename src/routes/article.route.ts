@@ -23,7 +23,7 @@ articleRouter.get("/", async (req: Request, res: Response) => {
 
   if (Number(cityId) < 0) {
     whereQuery = {};
-  } else if (Number(districtId) < 0) {
+  } else if (Number(districtId) < 0 || districtId === undefined) {
     whereQuery.cityId = Number(cityId);
   } else {
     whereQuery = { cityId: Number(cityId), districtId: Number(districtId) };
