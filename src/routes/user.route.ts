@@ -100,7 +100,6 @@ userRouter.delete("/me", authUser, async (req: Request, res: Response) => {
       prisma.article.deleteMany({ where: { authorId: userId } }),
       prisma.articleLike.deleteMany({ where: { userId } }),
       prisma.comment.deleteMany({ where: { authorId: userId } }),
-      prisma.chatRoomUser.deleteMany({ where: { userId: userId } }),
       prisma.message.deleteMany({ where: { senderId: userId } }),
       prisma.unregisterLog.create({ data: { userId } }),
     ]);
