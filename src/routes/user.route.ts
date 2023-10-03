@@ -15,7 +15,7 @@ userRouter.get("/me", authUser, async (req: Request, res: Response) => {
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: UserSelect,
+    select: { ...UserSelect, chatRooms: true },
   });
 
   if (!user) {
