@@ -7,6 +7,7 @@ import { UserSelect } from "../utils/constants";
 
 export const userUrl = "/user";
 export const userRouter = Router();
+
 const upload = multer({ storage: multer.memoryStorage() });
 
 userRouter.get("/me", authUser, async (req: Request, res: Response) => {
@@ -19,6 +20,7 @@ userRouter.get("/me", authUser, async (req: Request, res: Response) => {
 
   if (!user) {
     res.status(404).json({ error: "User not found" });
+
     return;
   }
 
@@ -107,6 +109,7 @@ userRouter.delete("/me", authUser, async (req: Request, res: Response) => {
     res.status(204).send();
   } catch (error) {
     console.error(error);
+
     res.status(500).json({ message: "회원탈퇴 처리 중, 오류가 발생했습니다." });
   }
 });
