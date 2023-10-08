@@ -37,6 +37,7 @@ articleRouter.get("/", async (req: Request, res: Response) => {
           select: UserSelect,
         },
       },
+      orderBy: { createdAt: "desc" },
     });
 
     const postList = await Promise.all(
