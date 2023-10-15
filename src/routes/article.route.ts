@@ -3,6 +3,7 @@ import { Request, Response, Router } from "express";
 import prisma from "../../prisma/prisma";
 import { authUser } from "../middlewares/auth-helper";
 import { UserSelect } from "../utils/constants";
+import { getArticleList } from "../utils/article-helper";
 
 interface WhereQueryType {
   cityId?: number;
@@ -40,29 +41,7 @@ articleRouter.get("/", async (req: Request, res: Response) => {
       orderBy: { createdAt: "desc" },
     });
 
-    const postList = await Promise.all(
-      posts.map(async (post) => {
-        const commentCount = await prisma.comment.count({
-          where: { articleId: post.id },
-        });
-
-        const likeCount = await prisma.articleLike.count({
-          where: { articleId: post.id },
-        });
-
-        return {
-          id: post.id,
-          title: post.title,
-          content: post.content,
-          author: post.author,
-          cityId: post.cityId,
-          districtId: post.districtId,
-          commentCount: commentCount,
-          likeCount: likeCount,
-          createdAt: post.createdAt,
-        };
-      })
-    );
+    const postList = await getArticleList(posts);
 
     res.status(200).json(postList);
   } catch (error) {
@@ -167,7 +146,9 @@ articleRouter.post("/", authUser, async (req: Request, res: Response) => {
       },
     });
 
-    res.status(201).json({ ...newArticle, city, district });
+    const newArticleList = await getArticleList([newArticle]);
+
+    res.status(201).json(newArticleList[0]);
   } catch (error) {
     console.error("Error while creating article:", error);
     res.status(500).json({ error: "Error while creating article" });
