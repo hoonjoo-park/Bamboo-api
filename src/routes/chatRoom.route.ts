@@ -15,7 +15,6 @@ chatRoomRouter.get("/", authUser, async (req: Request, res: Response) => {
 
   if (!chatRooms) {
     res.status(404).json({ error: "ChatRoom not found" });
-    return;
   }
 
   res.json(chatRooms);
