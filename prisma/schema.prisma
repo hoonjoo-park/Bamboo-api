@@ -14,13 +14,13 @@ model User {
   kakaoId       String?     @unique
   appleId       String?     @unique
   googleId      String?     @unique
-  iosToken      String?
+  iosToken      String?     @unique
   fcmToken      String?     @unique
   createdAt     DateTime    @default(now())
   profile       Profile?
   articles      Article[]
   comments      Comment[]
-  chatRooms     ChatRoom[]
+  chatRooms     ChatRoomUser[]
   messages      Message[]
 }
 
@@ -54,33 +54,44 @@ model ArticleLike {
 }
 
 model Comment {
-  id                Int         @id @default(autoincrement())
+  id                Int           @id @default(autoincrement())
   content           String
   authorId          Int
-  author            User        @relation(fields: [authorId], references: [id])
+  author            User          @relation(fields: [authorId], references: [id])
   articleId         Int
-  article           Article        @relation(fields: [articleId], references: [id])
+  article           Article       @relation(fields: [articleId], references: [id])
   parentCommentId   Int?
-  createdAt         DateTime    @default(now())
+  createdAt         DateTime      @default(now())
 }
 
 model ChatRoom {
-  id          Int            @id @default(autoincrement())
-  users       User[]
-  messages    Message[]
-  unReadCount Int            @default(0)
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  id              Int             @id @default(autoincrement())
+  users           ChatRoomUser[]
+  messages        Message[]       @relation("messages")
+  latestMessageId Int?            @unique
+  latestMessage   Message?        @relation(name: "latestMessage", fields: [latestMessageId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  unReadCount     Int             @default(0)
+  createdAt       DateTime        @default(now())
+}
+
+model ChatRoomUser {
+  id                      Int       @id @default(autoincrement()) @map("_id")
+  userId                  Int
+  user                    User      @relation(fields: [userId], references: [id])
+  chatRoomId              Int
+  chatRoom                ChatRoom  @relation(fields: [chatRoomId], references: [id])
+  hasSeenLatestMessage    Boolean
 }
 
 model Message {
-  id          Int       @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   senderId    Int
+  sender      User        @relation(fields: [senderId], references: [id])
   chatRoomId  Int
+  chatRoom    ChatRoom    @relation(name: "messages", fields: [chatRoomId], references: [id])
+  isLatest    ChatRoom?   @relation("latestMessage")
   content     String
-  createdAt   DateTime  @default(now())
-  sender      User      @relation(fields: [senderId], references: [id])
-  chatRoom    ChatRoom  @relation(fields: [chatRoomId], references: [id])
+  createdAt   DateTime    @default(now())
 }
 
 model City {
