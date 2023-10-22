@@ -1,8 +1,9 @@
 {
   "name": "bamboo-api",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.js",
   "author": "hoonjoo-park",
+  "description": "bamboo-schema",
   "license": "MIT",
   "scripts": {
     "dev": "nodemon --watch \"src/**/*.ts\" --exec \"ts-node\" src/app.ts",
