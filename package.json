@@ -1,6 +1,6 @@
 {
-  "name": "bamboo-api",
-  "version": "1.0.2",
+  "name": "bamboo-schema",
+  "version": "1.0.3",
   "main": "index.js",
   "author": "hoonjoo-park",
   "description": "bamboo-schema",
