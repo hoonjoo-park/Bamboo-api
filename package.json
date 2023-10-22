@@ -1,11 +1,12 @@
 {
   "name": "bamboo-schema",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "index.js",
   "author": "hoonjoo-park",
   "description": "bamboo-schema",
   "license": "MIT",
   "files": [
+    "prisma/prisma.ts",
     "prisma/schema.prisma"
   ],
   "scripts": {
