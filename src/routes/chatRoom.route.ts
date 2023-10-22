@@ -9,13 +9,19 @@ chatRoomRouter.get("/", authUser, async (req: Request, res: Response) => {
   const userId = req.userId;
 
   const chatRooms = await prisma.chatRoom.findMany({
-    where: { users: { some: { id: userId } } },
-    select: { id: true, users: true, lastMessageId: true, unReadCount: true },
+    where: {
+      users: { some: { id: userId } },
+    },
+    orderBy: {
+      latestMessage: {
+        createdAt: "desc",
+      },
+    },
   });
 
   if (!chatRooms) {
     res.status(404).json({ error: "ChatRoom not found" });
   }
 
-  res.json(chatRooms);
+  res.status(200).json(chatRooms);
 });

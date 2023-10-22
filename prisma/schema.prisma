@@ -70,7 +70,6 @@ model ChatRoom {
   messages        Message[]       @relation("messages")
   latestMessageId Int?            @unique
   latestMessage   Message?        @relation(name: "latestMessage", fields: [latestMessageId], references: [id], onUpdate: NoAction, onDelete: NoAction)
-  unReadCount     Int             @default(0)
   createdAt       DateTime        @default(now())
 }
 
