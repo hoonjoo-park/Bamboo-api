@@ -1,12 +1,12 @@
 {
   "name": "bamboo-schema",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "main": "dist/index.js",
   "author": "hoonjoo-park",
   "description": "bamboo-schema",
   "license": "MIT",
   "files": [
-    "dist/prisma, dist/index.js"
+    "./dist/prisma, ./dist/src/index.js"
   ],
   "scripts": {
     "dev": "nodemon --watch \"src/**/*.ts\" --exec \"ts-node\" src/app.ts",
