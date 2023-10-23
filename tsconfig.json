@@ -1,20 +1,16 @@
 {
   "compilerOptions": {
+    "target": "es2021",
     "module": "commonjs",
-    "esModuleInterop": true,
-    "target": "es6",
-    "noImplicitAny": true,
     "moduleResolution": "node",
+    "declaration": true,
     "sourceMap": true,
-    "baseUrl": "./",
-    "rootDir": ".",
+    "rootDir": "./",
     "outDir": "./dist",
-    "paths": {
-      "*": ["node_modules/*"]
-    },
-    "lib": ["es2015"],
-    "typeRoots": ["./src/types", "./node_modules/@types"]
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "**/*.spec.ts"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "**/*.spec.ts", "dist"]
 }
