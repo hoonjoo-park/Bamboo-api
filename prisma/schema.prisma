@@ -3,111 +3,111 @@ generator client {
 }
 
 datasource db {
-    provider = "mysql"
-    url = env("DATABASE_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id            Int         @id @default(autoincrement())
-  email         String?     @unique
-  name          String
-  kakaoId       String?     @unique
-  appleId       String?     @unique
-  googleId      String?     @unique
-  iosToken      String?     @unique
-  fcmToken      String?     @unique
-  createdAt     DateTime    @default(now())
-  profile       Profile?
-  articles      Article[]
-  comments      Comment[]
-  chatRooms     ChatRoomUser[]
-  messages      Message[]
+  id        Int            @id @default(autoincrement())
+  email     String?        @unique
+  name      String
+  kakaoId   String?        @unique
+  appleId   String?        @unique
+  googleId  String?        @unique
+  iosToken  String?        @unique
+  fcmToken  String?        @unique
+  createdAt DateTime       @default(now())
+  profile   Profile?
+  articles  Article[]
+  comments  Comment[]
+  chatRooms ChatRoomUser[]
+  messages  Message[]
 }
 
 model Profile {
-  id           Int    @id @default(autoincrement())
-  userId       Int    @unique
+  id           Int     @id @default(autoincrement())
+  userId       Int     @unique
   profileImage String?
-  username     String @unique
-  user         User   @relation(fields: [userId], references: [id])
+  username     String  @unique
+  user         User    @relation(fields: [userId], references: [id])
 }
 
 model Article {
-  id          Int         @id @default(autoincrement())
-  title       String
-  content     String
-  authorId    Int
-  author      User        @relation(fields: [authorId], references: [id])
-  comments    Comment[]
-  likes       ArticleLike[]
-  cityId      Int
-  districtId  Int?
-  createdAt   DateTime    @default(now())
+  id         Int           @id @default(autoincrement())
+  title      String
+  content    String
+  authorId   Int
+  author     User          @relation(fields: [authorId], references: [id])
+  comments   Comment[]
+  likes      ArticleLike[]
+  cityId     Int
+  districtId Int?
+  createdAt  DateTime      @default(now())
 }
 
 model ArticleLike {
-  userId        Int
-  articleId     Int
-  article       Article    @relation(fields: [articleId], references: [id])
+  userId    Int
+  articleId Int
+  article   Article @relation(fields: [articleId], references: [id])
 
   @@id([userId, articleId])
 }
 
 model Comment {
-  id                Int           @id @default(autoincrement())
-  content           String
-  authorId          Int
-  author            User          @relation(fields: [authorId], references: [id])
-  articleId         Int
-  article           Article       @relation(fields: [articleId], references: [id])
-  parentCommentId   Int?
-  createdAt         DateTime      @default(now())
+  id              Int      @id @default(autoincrement())
+  content         String
+  authorId        Int
+  author          User     @relation(fields: [authorId], references: [id])
+  articleId       Int
+  article         Article  @relation(fields: [articleId], references: [id])
+  parentCommentId Int?
+  createdAt       DateTime @default(now())
 }
 
 model ChatRoom {
-  id              Int             @id @default(autoincrement())
+  id              Int            @id @default(autoincrement())
   users           ChatRoomUser[]
-  messages        Message[]       @relation("messages")
-  latestMessageId Int?            @unique
-  latestMessage   Message?        @relation(name: "latestMessage", fields: [latestMessageId], references: [id], onUpdate: NoAction, onDelete: NoAction)
-  createdAt       DateTime        @default(now())
+  messages        Message[]      @relation("messages")
+  latestMessageId Int?           @unique
+  latestMessage   Message?       @relation(name: "latestMessage", fields: [latestMessageId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  createdAt       DateTime       @default(now())
 }
 
 model ChatRoomUser {
-  id                      Int       @id @default(autoincrement()) @map("_id")
-  userId                  Int
-  user                    User      @relation(fields: [userId], references: [id])
-  chatRoomId              Int
-  chatRoom                ChatRoom  @relation(fields: [chatRoomId], references: [id])
-  hasSeenLatestMessage    Boolean
+  id                   Int      @id @default(autoincrement()) @map("_id")
+  userId               Int
+  user                 User     @relation(fields: [userId], references: [id])
+  chatRoomId           Int
+  chatRoom             ChatRoom @relation(fields: [chatRoomId], references: [id])
+  hasSeenLatestMessage Boolean
 }
 
 model Message {
-  id          Int         @id @default(autoincrement())
-  senderId    Int
-  sender      User        @relation(fields: [senderId], references: [id])
-  chatRoomId  Int
-  chatRoom    ChatRoom    @relation(name: "messages", fields: [chatRoomId], references: [id])
-  isLatest    ChatRoom?   @relation("latestMessage")
-  content     String
-  createdAt   DateTime    @default(now())
+  id         Int       @id @default(autoincrement())
+  senderId   Int
+  sender     User      @relation(fields: [senderId], references: [id])
+  chatRoomId Int
+  chatRoom   ChatRoom  @relation(name: "messages", fields: [chatRoomId], references: [id])
+  isLatest   ChatRoom? @relation("latestMessage")
+  content    String
+  createdAt  DateTime  @default(now())
 }
 
 model City {
-  id          Int   @id   @default(autoincrement())
-  name        String
-  districts   District[]
+  id        Int        @id @default(autoincrement())
+  name      String
+  districts District[]
 }
 
 model District {
-  id          Int     @id   @default(autoincrement())
-  cityId      Int
-  city        City    @relation(fields: [cityId], references: [id])
-  name        String
+  id     Int    @id @default(autoincrement())
+  cityId Int
+  city   City   @relation(fields: [cityId], references: [id])
+  name   String
 }
 
 model UnregisterLog {
-  id        Int       @id   @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   userId    Int
-  createdAt DateTime  @default(now())
+  createdAt DateTime @default(now())
 }
