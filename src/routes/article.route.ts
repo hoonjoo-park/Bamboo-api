@@ -4,6 +4,7 @@ import prisma from "../../prisma/prisma";
 import { authUser } from "../middlewares/auth-helper";
 import { UserSelect } from "../utils/constants";
 import { getArticleList } from "../utils/article-helper";
+import { okJSON } from "../utils/public";
 
 interface WhereQueryType {
   cityId?: number;
@@ -177,7 +178,7 @@ articleRouter.post(
         },
       });
 
-      res.status(200).json({ message: "ok" });
+      res.status(200).json(okJSON);
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Post article like Error" });
@@ -202,7 +203,7 @@ articleRouter.delete(
         },
       });
 
-      res.status(200).json({ message: "ok" });
+      res.status(200).json(okJSON);
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Delete article like Error" });

@@ -1,6 +1,7 @@
 import { Request, Response, Router } from "express";
 import prisma from "../../prisma/prisma";
 import { authUser } from "../../src/middlewares/auth-helper";
+import { okJSON } from "../utils/public";
 
 export const commentUrl = "/comment";
 export const commentRouter = Router();
@@ -35,7 +36,7 @@ commentRouter.post(
         data: query,
       });
 
-      res.status(200).json({ message: "ok" });
+      res.status(200).json(okJSON);
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Post comment Error" });
@@ -61,7 +62,7 @@ commentRouter.delete(
 
       await prisma.comment.delete({ where: { id: Number(commentId) } });
 
-      res.status(200).json({ message: "ok" });
+      res.status(200).json(okJSON);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

@@ -15,7 +15,6 @@ locationRouter.get("/", async (req: Request, res: Response) => {
     res
       .status(404)
       .json({ message: "서버로부터 위치 정보를 불러올 수 없습니다." });
-    return;
   }
 
   res.status(200).json(cities);
