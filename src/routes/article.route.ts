@@ -118,16 +118,6 @@ articleRouter.post("/", authUser, async (req: Request, res: Response) => {
   const isDistrictNull = districtId === -1;
 
   try {
-    const city = await prisma.city.findUnique({
-      where: { id: cityId },
-    });
-
-    const district = isDistrictNull
-      ? null
-      : await prisma.district.findUnique({
-          where: { id: districtId },
-        });
-
     const newArticle = await prisma.article.create({
       data: {
         title,
