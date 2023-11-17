@@ -1,3 +1,5 @@
 import { PrismaClient } from "@prisma/client";
 
-export const bambooPrisma = new PrismaClient();
+export const bambooModel = {
+  bambooPrisma: new PrismaClient(),
+};
