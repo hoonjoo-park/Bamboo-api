@@ -12,8 +12,7 @@
   },
   "files": [
     "dist/src/index.js",
-    "dist/src/index.d.ts",
-    "prisma/schema.prisma"
+    "dist/src/index.d.ts"
   ],
   "dependencies": {
     "@prisma/client": "^4.13.0",
