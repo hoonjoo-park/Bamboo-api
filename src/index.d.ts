@@ -2,10 +2,8 @@ import { PrismaClient } from "@prisma/client";
 
 export * from ".prisma/client/index.d";
 
-export interface BambooModel {
+export interface BambooPrisma {
   bambooPrisma: PrismaClient;
 }
 
-declare const bambooModel: BambooModel;
-
-export default bambooModel;
+export function getBambooPrisma(ctx: any): Promise<BambooPrisma>;

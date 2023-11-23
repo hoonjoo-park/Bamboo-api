@@ -1,6 +1,8 @@
 import { PrismaClient } from "@prisma/client";
-import { BambooModel } from "./index.d";
+import { BambooPrisma } from "./index.d";
 
-export const bambooModel: BambooModel = {
-  bambooPrisma: new PrismaClient(),
+const bambooPrisma = new PrismaClient();
+
+export const getBambooPrisma = async (props: any): Promise<BambooPrisma> => {
+  return { ...props, bambooPrisma };
 };
