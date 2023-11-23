@@ -6,4 +6,4 @@ export interface BambooPrisma {
   bambooPrisma: PrismaClient;
 }
 
-export function getBambooPrisma(ctx: any): Promise<BambooPrisma>;
+export function getBambooPrisma(): Promise<BambooPrisma>;
