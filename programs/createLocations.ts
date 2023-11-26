@@ -1,5 +1,5 @@
-import { createReadStream } from "fs";
 import csvParser from "csv-parser";
+import { createReadStream } from "fs";
 import prisma from "../prisma/prisma";
 
 interface CsvRow {
@@ -7,8 +7,21 @@ interface CsvRow {
   district: string;
 }
 
+const readCsvFile = async (filePath: string): Promise<CsvRow[]> => {
+  const data: CsvRow[] = [];
+  const stream = createReadStream(filePath).pipe(
+    csvParser({ headers: ["city", "district"] })
+  );
+
+  for await (const row of stream) {
+    data.push(row as CsvRow);
+  }
+
+  return data;
+};
+
 const main = async () => {
-  const filePath = "./location.csv";
+  const filePath = __dirname + "/location.csv";
   const data = await readCsvFile(filePath);
 
   for (const row of data) {
@@ -36,19 +49,6 @@ const main = async () => {
   }
 
   await prisma.$disconnect();
-};
-
-const readCsvFile = async (filePath: string): Promise<CsvRow[]> => {
-  const data: CsvRow[] = [];
-  const stream = createReadStream(filePath).pipe(
-    csvParser({ headers: ["city", "district"] })
-  );
-
-  for await (const row of stream) {
-    data.push(row as CsvRow);
-  }
-
-  return data;
 };
 
 main().catch((error) => {
