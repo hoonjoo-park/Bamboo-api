@@ -12,6 +12,21 @@ chatRoomRouter.get("/", authUser, async (req: Request, res: Response) => {
     where: {
       users: { some: { id: userId } },
     },
+    include: {
+      users: {
+        select: {
+          id: true,
+          user: {
+            include: {
+              profile: true,
+            },
+          },
+          userId: true,
+          hasSeenLatestMessage: true,
+        },
+      },
+      latestMessage: true,
+    },
     orderBy: {
       latestMessage: {
         createdAt: "desc",
