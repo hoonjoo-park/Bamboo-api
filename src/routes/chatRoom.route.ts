@@ -2,7 +2,7 @@ import { Request, Response, Router } from "express";
 import { authUser } from "../middlewares/auth-helper";
 import prisma from "../../prisma/prisma";
 
-export const userUrl = "/chatRoom";
+export const chatRoomUrl = "/chatRoom";
 export const chatRoomRouter = Router();
 
 chatRoomRouter.get("/", authUser, async (req: Request, res: Response) => {
