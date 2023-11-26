@@ -42,6 +42,11 @@ articleRouter.get("/", async (req: Request, res: Response) => {
       orderBy: { createdAt: "desc" },
     });
 
+    if (!posts) {
+      res.status(404).json({ error: "Posts not found" });
+      return;
+    }
+
     const postList = await getArticleList(posts);
 
     res.status(200).json(postList);

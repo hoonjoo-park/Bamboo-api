@@ -6,6 +6,12 @@ import prisma from "../../prisma/prisma";
 export const authUrl = "/auth";
 export const authRouter = Router();
 
+const isValidProvider = (
+  provider: string
+): provider is "googleId" | "appleId" | "kakaoId" => {
+  return ["googleId", "appleId", "kakaoId"].includes(provider);
+};
+
 authRouter.post("/:provider", async (req: Request, res: Response) => {
   const { provider } = req.params;
   const { accessToken } = req.body;
@@ -48,11 +54,18 @@ authRouter.post("/:provider", async (req: Request, res: Response) => {
       return;
     }
 
+    const providerId = `${provider}Id`;
+
+    if (!isValidProvider(providerId)) {
+      res.status(400).json({ error: "Invalid provider" });
+      return;
+    }
+
     const user = await prisma.user.upsert({
-      where: { [`${provider}Id`]: profile.id },
+      where: { [providerId]: profile.id },
       update: {},
       create: {
-        [`${provider}Id`]: profile.id,
+        [providerId]: profile.id,
         email: profile.email,
         name: profile.name,
         profile: {
