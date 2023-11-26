@@ -6,9 +6,9 @@ import prisma from "../../prisma/prisma";
 export const authUrl = "/auth";
 export const authRouter = Router();
 
-const isValidProvider = (
-  provider: string
-): provider is "googleId" | "appleId" | "kakaoId" => {
+type SNSProviderId = "googleId" | "appleId" | "kakaoId";
+
+const isValidProvider = (provider: string): provider is SNSProviderId => {
   return ["googleId", "appleId", "kakaoId"].includes(provider);
 };
 
