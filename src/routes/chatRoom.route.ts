@@ -15,13 +15,11 @@ chatRoomRouter.get("/", authUser, async (req: Request, res: Response) => {
     include: {
       users: {
         select: {
-          id: true,
           user: {
-            include: {
+            select: {
               profile: true,
             },
           },
-          userId: true,
           hasSeenLatestMessage: true,
         },
       },
@@ -38,5 +36,19 @@ chatRoomRouter.get("/", authUser, async (req: Request, res: Response) => {
     res.status(404).json({ error: "ChatRoom not found" });
   }
 
-  res.status(200).json(chatRooms);
+  const chatRoomsToReturn = chatRooms.map((chatRoom) => {
+    const users = chatRoom.users.map((user) => {
+      return {
+        profile: user.user.profile,
+        hasSeenLatestMessage: user.hasSeenLatestMessage,
+      };
+    });
+
+    return {
+      ...chatRoom,
+      users,
+    };
+  });
+
+  res.status(200).json(chatRoomsToReturn);
 });
