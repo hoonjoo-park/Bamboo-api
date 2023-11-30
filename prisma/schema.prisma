@@ -68,8 +68,7 @@ model ChatRoom {
   id              Int            @id @default(autoincrement())
   users           ChatRoomUser[]
   messages        Message[]      @relation("messages")
-  latestMessageId Int?           @unique
-  latestMessage   Message?       @relation(name: "latestMessage", fields: [latestMessageId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  latestMessageId Int?
   createdAt       DateTime       @default(now())
 }
 
@@ -79,7 +78,7 @@ model ChatRoomUser {
   user                 User     @relation(fields: [userId], references: [id])
   chatRoomId           Int
   chatRoom             ChatRoom @relation(fields: [chatRoomId], references: [id])
-  hasSeenLatestMessage Boolean
+  lastCheck            DateTime?
 }
 
 model Message {
@@ -88,7 +87,6 @@ model Message {
   sender     User      @relation(fields: [senderId], references: [id])
   chatRoomId Int
   chatRoom   ChatRoom  @relation(name: "messages", fields: [chatRoomId], references: [id])
-  isLatest   ChatRoom? @relation("latestMessage")
   content    String
   createdAt  DateTime  @default(now())
 }

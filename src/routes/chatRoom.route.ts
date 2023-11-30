@@ -20,14 +20,8 @@ chatRoomRouter.get("/", authUser, async (req: Request, res: Response) => {
               profile: true,
             },
           },
-          hasSeenLatestMessage: true,
+          lastCheck: true,
         },
-      },
-      latestMessage: true,
-    },
-    orderBy: {
-      latestMessage: {
-        createdAt: "desc",
       },
     },
   });
@@ -40,7 +34,7 @@ chatRoomRouter.get("/", authUser, async (req: Request, res: Response) => {
     const users = chatRoom.users.map((user) => {
       return {
         profile: user.user.profile,
-        hasSeenLatestMessage: user.hasSeenLatestMessage,
+        lastCheck: user.lastCheck,
       };
     });
 
@@ -52,3 +46,24 @@ chatRoomRouter.get("/", authUser, async (req: Request, res: Response) => {
 
   res.status(200).json(chatRoomsToReturn);
 });
+
+chatRoomRouter.patch(
+  "/latest-message",
+  authUser,
+  async (req: Request, res: Response) => {
+    const { chatRoomId, latestMessageId } = req.body;
+
+    const chatRoom = await prisma.chatRoom.update({
+      where: { id: chatRoomId },
+      data: {
+        latestMessageId,
+      },
+    });
+
+    if (!chatRoom) {
+      res.status(404).json({ error: "ChatRoom not found" });
+    }
+
+    res.status(200).json(chatRoom);
+  }
+);
