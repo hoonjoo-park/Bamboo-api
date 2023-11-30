@@ -13,12 +13,32 @@ chatRoomRouter.post("/", authUser, async (req: Request, res: Response) => {
     const chatRoom = await prisma.chatRoom.create({
       data: {
         users: {
-          connect: [{ id: userId }, { id: senderId }],
+          create: [{ userId }, { userId: senderId }],
+        },
+      },
+      include: {
+        users: {
+          select: {
+            user: {
+              select: {
+                profile: true,
+              },
+            },
+            lastCheck: true,
+          },
         },
       },
     });
 
-    res.status(200).json(chatRoom);
+    const chatRoomToReturn = {
+      ...chatRoom,
+      users: chatRoom.users.map((user) => ({
+        profile: user.user.profile,
+        lastCheck: user.lastCheck,
+      })),
+    };
+
+    res.status(200).json(chatRoomToReturn);
   } catch (error) {
     console.error("Error while creating chatRoom:", error);
     res.status(500).json({ error: "Error while creating chatRoom" });
@@ -30,7 +50,7 @@ chatRoomRouter.get("/", authUser, async (req: Request, res: Response) => {
 
   const chatRooms = await prisma.chatRoom.findMany({
     where: {
-      users: { some: { id: userId } },
+      users: { some: { userId } },
     },
     include: {
       users: {
@@ -50,26 +70,35 @@ chatRoomRouter.get("/", authUser, async (req: Request, res: Response) => {
     res.status(404).json({ error: "ChatRoom not found" });
   }
 
-  const chatRoomsToReturn = chatRooms.map(async (chatRoom) => {
-    const users = chatRoom.users.map((user) => {
+  const chatRoomsToReturn = await Promise.all(
+    chatRooms.map(async (chatRoom) => {
+      const users = chatRoom.users.map((user) => {
+        return {
+          profile: user.user.profile,
+          lastCheck: user.lastCheck,
+        };
+      });
+
+      if (chatRoom.latestMessageId === null) {
+        return {
+          ...chatRoom,
+          users,
+        };
+      }
+
+      const latestMessage = await prisma.message.findFirst({
+        where: {
+          id: chatRoom.latestMessageId,
+        },
+      });
+
       return {
-        profile: user.user.profile,
-        lastCheck: user.lastCheck,
+        ...chatRoom,
+        latestMessage,
+        users,
       };
-    });
-
-    const latestMessage = await prisma.message.findFirst({
-      where: {
-        id: chatRoom.latestMessageId,
-      },
-    });
-
-    return {
-      ...chatRoom,
-      latestMessage,
-      users,
-    };
-  });
+    })
+  );
 
   res.status(200).json(chatRoomsToReturn);
 });
