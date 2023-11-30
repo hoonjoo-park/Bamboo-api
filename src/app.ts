@@ -9,6 +9,7 @@ import { commentRouter, commentUrl } from "./routes/comment.route";
 import { locationRouter, locationUrl } from "./routes/location.route";
 import { userRouter, userUrl } from "./routes/user.route";
 import { chatRoomRouter, chatRoomUrl } from "./routes/chatRoom.route";
+import { chatRouter, chatUrl } from "./routes/chat.route";
 
 const app = express();
 app.use(express.json());
@@ -36,6 +37,7 @@ app.use(articleUrl, articleRouter);
 app.use(commentUrl, commentRouter);
 app.use(locationUrl, locationRouter);
 app.use(chatRoomUrl, chatRoomRouter);
+app.use(chatUrl, chatRouter)
 
 const PORT = process.env.PORT || 3000;
 

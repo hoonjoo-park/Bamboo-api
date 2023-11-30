@@ -5,6 +5,44 @@ import prisma from "../../prisma/prisma";
 export const chatUrl = "/chat";
 export const chatRouter = Router();
 
+chatRouter.get(
+  "/:chatRoomId",
+  authUser,
+  async (req: Request, res: Response) => {
+    const { page } = req.query;
+    const { chatRoomId } = req.params;
+
+    const chatRoom = await prisma.chatRoom.findUnique({
+      where: {
+        id: Number(chatRoomId),
+      },
+    });
+
+    if (!chatRoom) {
+      res.status(404).json({ error: "ChatRoom not found" });
+    }
+
+    const messages = await prisma.message.findMany({
+      where: {
+        chatRoomId: Number(chatRoomId),
+      },
+      include: {
+        sender: {
+          select: {
+            profile: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: Number(page),
+    });
+
+    res.status(200).json(messages.reverse());
+  }
+);
+
 chatRouter.post("/", authUser, async (req: Request, res: Response) => {
   const { chatRoomId, message } = req.body;
   const userId = req.userId;
@@ -19,30 +57,22 @@ chatRouter.post("/", authUser, async (req: Request, res: Response) => {
     res.status(404).json({ error: "ChatRoom not found" });
   }
 
-  const chat = await prisma.message.create({
+  const chatMessage = await prisma.message.create({
     data: {
       senderId: userId,
-      sender: {
-        connect: {
-          id: userId,
-        },
-      },
       chatRoomId,
-      chatRoom: {
-        connect: {
-          id: chatRoomId,
-        },
-      },
       content: message,
-    },
-    include: {
-      sender: {
-        select: {
-          profile: true,
-        },
-      },
     },
   });
 
-  res.status(200).json(chat);
+  await prisma.chatRoom.update({
+    where: {
+      id: chatRoomId,
+    },
+    data: {
+      latestMessageId: chatMessage.id,
+    },
+  });
+
+  res.status(200).json(chatMessage);
 });
