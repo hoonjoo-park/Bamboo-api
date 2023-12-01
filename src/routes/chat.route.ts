@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
-import { authUser } from "../middlewares/auth-helper";
 import prisma from "../../prisma/prisma";
+import { authUser } from "../middlewares/auth-helper";
 
 export const chatUrl = "/chat";
 export const chatRouter = Router();
@@ -65,12 +65,12 @@ chatRouter.post("/", authUser, async (req: Request, res: Response) => {
     },
   });
 
-  await prisma.chatRoom.update({
+  await prisma.userChatRoom.update({
     where: {
-      id: chatRoomId,
+      userId_chatRoomId: { userId, chatRoomId },
     },
     data: {
-      latestMessageId: chatMessage.id,
+      lastReadMessageId: message.id,
     },
   });
 

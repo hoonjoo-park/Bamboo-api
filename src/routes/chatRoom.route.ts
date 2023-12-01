@@ -1,42 +1,68 @@
 import { Request, Response, Router } from "express";
-import { authUser } from "../middlewares/auth-helper";
 import prisma from "../../prisma/prisma";
+import { authUser } from "../middlewares/auth-helper";
+import { getChatRoomResponse } from "../utils/chat-helper";
 
 export const chatRoomUrl = "/chatRoom";
 export const chatRoomRouter = Router();
 
 chatRoomRouter.post("/", authUser, async (req: Request, res: Response) => {
-  const { userId } = req.body;
-  const senderId = req.userId;
+  const { userId: opponentUserId } = req.body;
+  const requestUserId = req.userId;
 
   try {
     const chatRoom = await prisma.chatRoom.create({
       data: {
         users: {
-          create: [{ userId }, { userId: senderId }],
-        },
-      },
-      include: {
-        users: {
-          select: {
-            user: {
-              select: {
-                profile: true,
-              },
-            },
-            lastCheck: true,
+          createMany: {
+            data: [{ userId: opponentUserId }, { userId: requestUserId }],
           },
         },
       },
     });
 
-    const chatRoomToReturn = {
-      ...chatRoom,
-      users: chatRoom.users.map((user) => ({
-        profile: user.user.profile,
-        lastCheck: user.lastCheck,
-      })),
-    };
+    if (!chatRoom) {
+      res.status(404).json({ error: "ChatRoom not found" });
+    }
+
+    const userChatRoom = await prisma.userChatRoom.findFirst({
+      where: {
+        userId: requestUserId,
+        chatRoomId: chatRoom.id,
+      },
+      include: {
+        chatRoom: {
+          include: {
+            messages: {
+              take: 1,
+              orderBy: {
+                createdAt: "desc",
+              },
+            },
+            users: {
+              where: {
+                userId: {
+                  not: requestUserId,
+                },
+              },
+              select: {
+                user: {
+                  select: {
+                    profile: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!userChatRoom) {
+      res.status(404).json({ error: "UserChatRoom not found" });
+    }
+
+    const chatRoomToReturn = getChatRoomResponse(userChatRoom);
 
     res.status(200).json(chatRoomToReturn);
   } catch (error) {
@@ -48,19 +74,33 @@ chatRoomRouter.post("/", authUser, async (req: Request, res: Response) => {
 chatRoomRouter.get("/", authUser, async (req: Request, res: Response) => {
   const userId = req.userId;
 
-  const chatRooms = await prisma.chatRoom.findMany({
+  const chatRooms = await prisma.userChatRoom.findMany({
     where: {
-      users: { some: { userId } },
+      userId,
     },
     include: {
-      users: {
-        select: {
-          user: {
-            select: {
-              profile: true,
+      chatRoom: {
+        include: {
+          messages: {
+            take: 1,
+            orderBy: {
+              createdAt: "desc",
             },
           },
-          lastCheck: true,
+          users: {
+            where: {
+              userId: {
+                not: userId,
+              },
+            },
+            select: {
+              user: {
+                select: {
+                  profile: true,
+                },
+              },
+            },
+          },
         },
       },
     },
@@ -70,49 +110,24 @@ chatRoomRouter.get("/", authUser, async (req: Request, res: Response) => {
     res.status(404).json({ error: "ChatRoom not found" });
   }
 
-  const chatRoomsToReturn = await Promise.all(
-    chatRooms.map(async (chatRoom) => {
-      const users = chatRoom.users.map((user) => {
-        return {
-          profile: user.user.profile,
-          lastCheck: user.lastCheck,
-        };
-      });
-
-      if (chatRoom.latestMessageId === null) {
-        return {
-          ...chatRoom,
-          users,
-        };
-      }
-
-      const latestMessage = await prisma.message.findFirst({
-        where: {
-          id: chatRoom.latestMessageId,
-        },
-      });
-
-      return {
-        ...chatRoom,
-        latestMessage,
-        users,
-      };
-    })
-  );
+  const chatRoomsToReturn = chatRooms.map((chatRoom) => {
+    return getChatRoomResponse(chatRoom);
+  });
 
   res.status(200).json(chatRoomsToReturn);
 });
 
 chatRoomRouter.patch(
-  "/latest-message",
+  "/last-read-message",
   authUser,
   async (req: Request, res: Response) => {
-    const { chatRoomId, latestMessageId } = req.body;
+    const { chatRoomId, lastMessageId } = req.body;
+    const userId = req.userId;
 
-    const chatRoom = await prisma.chatRoom.update({
-      where: { id: chatRoomId },
+    const chatRoom = await prisma.userChatRoom.update({
+      where: { userId_chatRoomId: { chatRoomId, userId } },
       data: {
-        latestMessageId,
+        lastReadMessageId: lastMessageId,
       },
     });
 
@@ -144,12 +159,18 @@ chatRoomRouter.delete(
     }
 
     if (!chatRoom.users.find((user) => user.userId === req.userId)) {
-      res
-        .status(403)
-        .json({ error: "You don't have permission to delete this chatRoom" });
+      res.status(403).json({
+        error: "You don't have any permission to delete this chatRoom",
+      });
     }
 
     try {
+      await prisma.userChatRoom.deleteMany({
+        where: {
+          chatRoomId: Number(chatRoomId),
+        },
+      });
+
       await prisma.chatRoom.delete({
         where: {
           id: Number(chatRoomId),

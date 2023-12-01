@@ -2,9 +2,9 @@ import { Comment } from "@prisma/client";
 import { Request, Response, Router } from "express";
 import prisma from "../../prisma/prisma";
 import { authUser } from "../middlewares/auth-helper";
-import { UserSelect } from "../utils/constants";
 import { getArticleList } from "../utils/article-helper";
 import { okJSON } from "../utils/public";
+import { UserSelect } from "../utils/selects";
 
 interface WhereQueryType {
   cityId?: number;

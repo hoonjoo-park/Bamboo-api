@@ -5,11 +5,11 @@ import admin from "firebase-admin";
 import morgan from "morgan";
 import { articleRouter, articleUrl } from "./routes/article.route";
 import { authRouter, authUrl } from "./routes/auth.route";
+import { chatRouter, chatUrl } from "./routes/chat.route";
+import { chatRoomRouter, chatRoomUrl } from "./routes/chatRoom.route";
 import { commentRouter, commentUrl } from "./routes/comment.route";
 import { locationRouter, locationUrl } from "./routes/location.route";
 import { userRouter, userUrl } from "./routes/user.route";
-import { chatRoomRouter, chatRoomUrl } from "./routes/chatRoom.route";
-import { chatRouter, chatUrl } from "./routes/chat.route";
 
 const app = express();
 app.use(express.json());
@@ -37,7 +37,7 @@ app.use(articleUrl, articleRouter);
 app.use(commentUrl, commentRouter);
 app.use(locationUrl, locationRouter);
 app.use(chatRoomUrl, chatRoomRouter);
-app.use(chatUrl, chatRouter)
+app.use(chatUrl, chatRouter);
 
 const PORT = process.env.PORT || 3000;
 
