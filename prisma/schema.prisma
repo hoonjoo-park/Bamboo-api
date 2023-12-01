@@ -20,7 +20,7 @@ model User {
   profile   Profile?
   articles  Article[]
   comments  Comment[]
-  chatRooms ChatRoomUser[]
+  chatRooms UserChatRoom[]
   messages  Message[]
 }
 
@@ -66,19 +66,21 @@ model Comment {
 
 model ChatRoom {
   id              Int            @id @default(autoincrement())
-  users           ChatRoomUser[]
+  users           UserChatRoom[]
   messages        Message[]      @relation("messages")
-  latestMessageId Int?
   createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
 }
 
-model ChatRoomUser {
-  id                   Int      @id @default(autoincrement())
+model UserChatRoom {
   userId               Int
-  user                 User     @relation(fields: [userId], references: [id])
   chatRoomId           Int
-  chatRoom             ChatRoom @relation(fields: [chatRoomId], references: [id])
   lastCheck            DateTime?
+  unreadMessageCount   Int     @default(0)
+  lastReadMessageId    Int?
+  user                 User     @relation(fields: [userId], references: [id])
+  chatRoom             ChatRoom @relation(fields: [chatRoomId], references: [id])
+  @@id([userId, chatRoomId])
 }
 
 model Message {
