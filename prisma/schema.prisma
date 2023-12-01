@@ -75,7 +75,6 @@ model ChatRoom {
 model UserChatRoom {
   userId               Int
   chatRoomId           Int
-  lastCheck            DateTime?
   unreadMessageCount   Int     @default(0)
   lastReadMessageId    Int?
   user                 User     @relation(fields: [userId], references: [id])
