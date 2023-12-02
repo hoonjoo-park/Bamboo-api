@@ -34,6 +34,13 @@ chatRoomRouter.post("/", authUser, async (req: Request, res: Response) => {
         chatRoom: {
           include: {
             messages: {
+              include: {
+                sender: {
+                  select: {
+                    profile: true,
+                  },
+                },
+              },
               take: 1,
               orderBy: {
                 createdAt: "desc",
@@ -82,6 +89,13 @@ chatRoomRouter.get("/", authUser, async (req: Request, res: Response) => {
       chatRoom: {
         include: {
           messages: {
+            include: {
+              sender: {
+                select: {
+                  profile: true,
+                },
+              },
+            },
             take: 1,
             orderBy: {
               createdAt: "desc",

@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import prisma from "../../prisma/prisma";
 import { authUser } from "../middlewares/auth-helper";
-import { Message } from "@prisma/client";
+import { getMessageResponse } from "../utils/chat-helper";
 
 export const chatUrl = "/chat";
 export const chatRouter = Router();
@@ -40,7 +40,11 @@ chatRouter.get(
       take: Number(page),
     });
 
-    res.status(200).json(messages.reverse());
+    const messagesToReturn = messages.map((message) => {
+      return getMessageResponse(message);
+    });
+
+    res.status(200).json(messagesToReturn.reverse());
   }
 );
 
@@ -78,13 +82,7 @@ chatRouter.post("/", authUser, async (req: Request, res: Response) => {
       res.status(500).json({ error: "cannot create message" });
     }
 
-    const messageToReturn = {
-      id: chatMessage.id,
-      chatRoomId: chatMessage.chatRoomId,
-      content: chatMessage.content,
-      createdAt: chatMessage.createdAt,
-      userProfile: chatMessage.sender.profile,
-    };
+    const messageToReturn = getMessageResponse(chatMessage);
 
     await prisma.userChatRoom.update({
       where: {
