@@ -39,7 +39,7 @@ chatRouter.get(
       orderBy: {
         createdAt: "desc",
       },
-      take: Number(page),
+      take: Number(page) * MESSAGE_LIMIT,
       skip: (Number(page) - 1) * MESSAGE_LIMIT,
     });
 
@@ -47,11 +47,13 @@ chatRouter.get(
       res.status(500).json({ error: "cannot fetch messages" });
     }
 
-    const messagesToReturn = messages.map((message) => {
-      return getMessageResponse(message);
-    });
+    const messagesToReturn = messages
+      .map((message) => {
+        return getMessageResponse(message);
+      })
+      .reverse();
 
-    res.status(200).json(messagesToReturn.reverse());
+    res.status(200).json(messagesToReturn);
   }
 );
 
