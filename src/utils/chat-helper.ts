@@ -17,11 +17,7 @@ interface MessageResponse extends Message {
   };
 }
 
-export const getMessageResponse = (message?: MessageResponse) => {
-  if (!message) {
-    return null;
-  }
-
+export const getMessageResponse = (message: MessageResponse) => {
   return {
     id: message.id,
     chatRoomId: message.chatRoomId,
@@ -37,7 +33,7 @@ export const getChatRoomResponse = (chatRoom: ChatRoomResponse) => {
   return {
     id: chatRoomId,
     senderProfile: room.users[0].user.profile,
-    lastMessage: getMessageResponse(room.messages[0]),
+    lastMessage: room.messages[0] ? getMessageResponse(room.messages[0]) : null,
     unreadMessageCount,
     updatedAt: room.updatedAt,
   };

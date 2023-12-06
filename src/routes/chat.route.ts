@@ -6,11 +6,13 @@ import { getMessageResponse } from "../utils/chat-helper";
 export const chatUrl = "/chat";
 export const chatRouter = Router();
 
+const MESSAGE_LIMIT = 50;
+
 chatRouter.get(
   "/:chatRoomId",
   authUser,
   async (req: Request, res: Response) => {
-    const { page } = req.query;
+    const { page = 1 } = req.query;
     const { chatRoomId } = req.params;
 
     const chatRoom = await prisma.chatRoom.findUnique({
@@ -38,7 +40,12 @@ chatRouter.get(
         createdAt: "desc",
       },
       take: Number(page),
+      skip: (Number(page) - 1) * MESSAGE_LIMIT,
     });
+
+    if (!messages) {
+      res.status(500).json({ error: "cannot fetch messages" });
+    }
 
     const messagesToReturn = messages.map((message) => {
       return getMessageResponse(message);
