@@ -47,11 +47,9 @@ chatRouter.get(
       res.status(500).json({ error: "cannot fetch messages" });
     }
 
-    const messagesToReturn = messages
-      .map((message) => {
-        return getMessageResponse(message);
-      })
-      .reverse();
+    const messagesToReturn = messages.map((message) => {
+      return getMessageResponse(message);
+    });
 
     res.status(200).json(messagesToReturn);
   }
