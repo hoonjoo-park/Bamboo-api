@@ -85,20 +85,20 @@ chatRouter.post("/", authUser, async (req: Request, res: Response) => {
       },
     });
 
-    if (!chatMessage) {
-      res.status(500).json({ error: "cannot create message" });
-    }
-
-    const messageToReturn = getMessageResponse(chatMessage);
-
     await prisma.userChatRoom.update({
       where: {
         userId_chatRoomId: { userId, chatRoomId },
       },
       data: {
-        lastReadMessageId: messageToReturn.id,
+        lastReadMessageId: chatMessage.id,
       },
     });
+
+    if (!chatMessage) {
+      res.status(500).json({ error: "cannot create message" });
+    }
+
+    const messageToReturn = getMessageResponse(chatMessage);
 
     res.status(200).json(messageToReturn);
   } catch (error) {
