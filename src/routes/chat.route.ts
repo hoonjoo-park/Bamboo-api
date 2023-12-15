@@ -51,7 +51,9 @@ chatRouter.get(
       return getMessageResponse(message);
     });
 
-    res.status(200).json(messagesToReturn);
+    res
+      .status(200)
+      .json({ messages: messagesToReturn, page: Number(page) + 1 });
   }
 );
 
