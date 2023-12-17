@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import prisma from "../../prisma/prisma";
 import { authUser } from "../middlewares/auth-helper";
-import { getMessageResponse } from "../utils/chat-helper";
+import { MessageResponse, getMessageResponse } from "../utils/chat-helper";
 
 export const chatUrl = "/chat";
 export const chatRouter = Router();
@@ -12,7 +12,7 @@ chatRouter.get(
   "/:chatRoomId",
   authUser,
   async (req: Request, res: Response) => {
-    const { page = 1 } = req.query;
+    const { lastMessageId } = req.query;
     const { chatRoomId } = req.params;
 
     const chatRoom = await prisma.chatRoom.findUnique({
@@ -25,23 +25,47 @@ chatRouter.get(
       res.status(404).json({ error: "ChatRoom not found" });
     }
 
-    const messages = await prisma.message.findMany({
-      where: {
-        chatRoomId: Number(chatRoomId),
-      },
-      include: {
-        sender: {
-          select: {
-            profile: true,
+    let messages: MessageResponse[];
+
+    if (lastMessageId === undefined) {
+      messages = await prisma.message.findMany({
+        where: {
+          chatRoomId: Number(chatRoomId),
+        },
+        include: {
+          sender: {
+            select: {
+              profile: true,
+            },
           },
         },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-      take: Number(page) * MESSAGE_LIMIT,
-      skip: (Number(page) - 1) * MESSAGE_LIMIT,
-    });
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: MESSAGE_LIMIT,
+      });
+    } else {
+      messages = await prisma.message.findMany({
+        where: {
+          chatRoomId: Number(chatRoomId),
+        },
+        include: {
+          sender: {
+            select: {
+              profile: true,
+            },
+          },
+        },
+        cursor: {
+          id: Number(lastMessageId),
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        skip: 1,
+        take: MESSAGE_LIMIT,
+      });
+    }
 
     if (!messages) {
       res.status(500).json({ error: "cannot fetch messages" });
@@ -51,9 +75,7 @@ chatRouter.get(
       return getMessageResponse(message);
     });
 
-    res
-      .status(200)
-      .json({ messages: messagesToReturn, page: Number(page) + 1 });
+    res.status(200).json(messagesToReturn);
   }
 );
 

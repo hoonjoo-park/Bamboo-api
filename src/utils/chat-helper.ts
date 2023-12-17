@@ -11,7 +11,7 @@ type ChatRoomResponse = UserChatRoom & {
   };
 };
 
-interface MessageResponse extends Message {
+export interface MessageResponse extends Message {
   sender: {
     profile: Profile;
   };
